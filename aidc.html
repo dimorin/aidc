@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aidc</title>
+    <link rel="stylesheet" href="./src/css/style_aidc.css">
+    
+    <!--es.modules.shism 폴리필-->
+    <script async src="https://ga.jspm.io/npm:es-module-shims@1.7.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@^0.154.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@^0.154.0/examples/jsm/",
+                "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm"                
+            }
+        }
+    </script>     
+</head>
+<body>    
+    <div class="main">
+        <canvas id="canvas"></canvas>   
+        
+        <div class="btn_wrap">               
+            <button class="btn_init_camera" style="">카메라 초기화</button> 
+        </div>
+    </div>
+    
+    
+    
+    <script src="./src/js/aidc.js" type="module"></script>
+</body>
+</html>
+<!-- 
+소스
+https://www.cgtrader.com/free-3d-models/electronics/other/lowpoly-technology-icons
+
+
+-->
