@@ -14,6 +14,7 @@ const mouse = new THREE.Vector2();  // create once
 const $btn_init_camera = document.querySelector('.btn_init_camera');
 const clock = new THREE.Clock();
 
+
 if(WebGL.isWebGLAvailable()){    
     //console.log(THREE);
     init();    // 기본 환경 세팅 : scene, camera, renderer, orbitControls, light    
@@ -35,6 +36,7 @@ function init(){
     // CAMERA
     camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
     camera.position.set(0,50,200);
+    //camera.position.set(-71,-2.87,28.7);
     camera.lookAt(0,0,0);
     
     // RENDERER
@@ -86,12 +88,18 @@ function init(){
     // axes
     const axesHelper = new THREE.AxesHelper(10);
     scene.add(axesHelper);
+    const gui = new GUI();    
+    const folder1 = gui.addFolder('camera.position');
+    folder1.add(camera.position, 'x', -100, 100);
+    folder1.add(camera.position, 'y', -100, 100);
+    folder1.add(camera.position, 'z', -100, 100);
 }
 
 async function loadMap(){
     
     const gltfLoader = new GLTFLoader();
     const promises = [        
+        gltfLoader.loadAsync("./src/models/server1_s.glb"),
         gltfLoader.loadAsync("./src/models/server1.glb"),
         gltfLoader.loadAsync("./src/models/server3.glb"),
         gltfLoader.loadAsync("./src/models/server4.glb"),
@@ -104,6 +112,10 @@ async function loadMap(){
     // model이 모두 로드 된 후 할 일    
     load_model.forEach(function(model, index){
         console.log(model.scene.children[0].name, model.scene.children[0].position);
+        if(model.scene.children[0].name === 'Cube021'){
+            model.scene.children[0].position.set(-10,5,100);
+        }
+        
         models.push(model.scene.children[0]);
         scene.add(model.scene.children[0]);        
     });
@@ -116,17 +128,17 @@ async function loadMap(){
 
 // 카메라 이동 함수
 function moveCameraToMesh(mesh) {    
+    
     let targetPosition;
-    console.log(mesh.parent.type);
     old_camera_position = {...camera.position};
     
     if(mesh.parent.type === 'Group'){
         if(mesh.parent.position.x < 0){
             targetPosition = new THREE.Vector3().copy(mesh.parent.position).add(new THREE.Vector3(-25, 15, 50));
+            
         }else{
             targetPosition = new THREE.Vector3().copy(mesh.parent.position).add(new THREE.Vector3(25, 15, 50));
-        }
-        
+        }        
     }else{
         if(mesh.position.x < 0){
             targetPosition = new THREE.Vector3().copy(mesh.position).add(new THREE.Vector3(-25, 15, 50));
@@ -136,23 +148,24 @@ function moveCameraToMesh(mesh) {
         
     }
 
-    /* gsap.to(camera.position, {
-        duration: 1.5,
-        x: 20,
-        y: 40,
-        z: 40,
-        ease: "power2.inOut"
-    }); */
-    gsap.to(camera.position, {
+     gsap.to(camera.position, {
         duration: 1.5,
         x: targetPosition.x,
         y: targetPosition.y,
         z: targetPosition.z,
         ease: "power2.inOut"
     });
-   
-
-    camera.lookAt(mesh.position);
+   /* gsap.to(camera.rotation, {
+            duration: 1.5,
+            x: mesh.position.x,
+            y: mesh.position.y,
+            z: mesh.position.z,
+            ease: "power2.inOut",
+            onUpdate:function(){
+                camera.lookAt(mesh.position)
+            }
+        }); */
+    //camera.lookAt(targetPosition);
     
 }
 function intersect(mouse) {
@@ -203,8 +216,10 @@ function windowClickHandler(event){
         // Create and position the div
         const infoDiv = document.createElement('div');
         infoDiv.className = 'info-div';
-        infoDiv.style.left = `${x}px`;
-        infoDiv.style.top = `${y}px`;
+        //infoDiv.style.left = `${x}px`;
+        //infoDiv.style.top = `${y}px`;
+        infoDiv.style.left = `100px`;
+        infoDiv.style.top = `150px`;
         infoDiv.innerHTML = `${clickedName} Clicked at<br>x: ${point.x.toFixed(2)}<br>y: ${point.y.toFixed(2)}<br>z: ${point.z.toFixed(2)}`;
         document.body.appendChild(infoDiv);
 
@@ -248,7 +263,10 @@ function windowClickHandler(event){
 }
 
 function draw(){                
-    var delta = clock.getDelta();    
+    var delta = clock.getDelta();  
+    
+    
+    
     orbitControls.update();        
     renderer.render( scene, camera );
     renderer.setAnimationLoop(draw);        
